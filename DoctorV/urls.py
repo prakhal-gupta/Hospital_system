@@ -1,20 +1,31 @@
 from django.urls import path
-from DoctorV.views import registration_view,login_view,Appointment_St_Up,Add_Appointment,Doctor_dash,Patient_detail,Doctor_Logout,Appointments,Appointment_Noti,Patient_Prescription,Patient_Pres_data
+from DoctorV.views import *
 
 
 app_name = 'DoctorV'
 urlpatterns = [
- 	path('registration',registration_view),
+ 	 path('registration',registration_view),
     path('login',login_view),
-    path('Appointment/Status',Appointment_St_Up),
-    path('Add/Appointment',Add_Appointment),
     path('home',Doctor_dash),
-    path('Patients',Patient_detail),
     path('logout',Doctor_Logout),
-    path('Appointments',Appointments),
+    
     path('Appointment/Notification',Appointment_Noti),
+    path('Appointment/Status',Appointment_St_Up),
+    path('Appointments',Appointments),
+    
+    path('Patients',Patient_detail),
     path('Patient/Prescription',Patient_Prescription),
     path('Patient/Detail',Patient_Pres_data),
+    
+    path('Appointment/patient',Add_Appointment_d),
+    path('Appointment/patient/gender',Patient_Gender),
+    path('Book/Appointment',Add_Appointment),
 
- ] 
+    path('Previous/Appointment',Previous_Appointment),
+    path('Previous/Patient/Prescription',Prescription_view),
+
+    path('Specialization/reg',Specialization_reg),
+    path('Specialization',Specialization_view),    
+
+] 
  

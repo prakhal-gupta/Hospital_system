@@ -2,18 +2,17 @@ from django.shortcuts import render,get_object_or_404
 import json
 import string
 import random
+import datetime
 from django.http  import JsonResponse
 from django.contrib.auth.hashers import make_password, check_password
 from .models import R_Detail,R_Security
-from PatientV.models import P_Appointment,P_Detail
-from DoctorV.models import D_Detail
-
+from PatientV.models import P_Appointment,P_Detail,P_Disease
+from DoctorV.models import D_Detail,D_Specialization
 import re
 
 
 def registration_view(request):
     if request.method == 'POST':
-        #  File = request.FILES["Previous_Record"]
          data = json.loads(request.body)
          First_Name_r         = data['First_Name']
          Last_Name_r          = data['Last_Name']
@@ -185,14 +184,15 @@ def login_view(request):
                     'message':'Wrong Password!!'
                     }
                     return JsonResponse(mes,status=403,safe=False)
-
-
+        
         else:
              
              mes = {
              'message':'Invalid User!!'
              }
              return JsonResponse(mes,status=403,safe=False)
+
+
 
 
 def Receptionist_dash(request):
@@ -205,7 +205,7 @@ def Receptionist_dash(request):
                Receptionist_s  =R_Security.objects.filter(Token = Token_d)[0]
                Username_d      = Receptionist_s.Username
                Receptionist_li         = R_Detail.objects.filter(Username = Username_d)
-               Receptionist_det        = list(Receptionist_li.values('id','First_Name','Last_Name','Username','DOB','Email','Mobile_Number','Gender','Government_ID',        'Gov_ID_Number','Height','Weight','Blood_Group','Address','City','State','Country','Pincode'))[0]
+               Receptionist_det        = list(Receptionist_li.values('id','First_Name','Last_Name','Username','DOB','Email','Mobile_Number','Gender','Government_ID','Gov_ID_Number','Height','Weight','Blood_Group','Address','City','State','Country','Pincode'))[0]
               
                mes = {      
                     'Receptionist_detail'  :Receptionist_det,
@@ -216,6 +216,8 @@ def Receptionist_dash(request):
                         'message':'Invalid Login attempt!'
                      }
                return JsonResponse(mes,status=403,safe=False)
+
+
 
 
 def Receptionist_Logout(request):
@@ -230,19 +232,85 @@ def Receptionist_Logout(request):
         return JsonResponse(mes,status=200,safe=False)
 
 
+
 def Doctor_detail(request):
     if request.method == 'POST':
         data = json.loads(request.body)
-        Token_d = data['Token']
-        if (R_Security.objects.filter(Token = Token_d).exists()):
-            Doctor_det = list(D_Detail.objects.values('id','First_Name','Last_Name','Username','DOB','Email','Mobile_Number','Gender'))
+        id_d = data['id']
+        
+        Doctor_d = D_Detail.objects.filter(id = id_d)
+        Doctor_det = list(Doctor_d.values('id','First_Name','Last_Name','Username','DOB','Email','Mobile_Number','Gender','Blood_Group','Qualification','Speciality','Experience','Previously_Working_at','Address','City','State','Country','Pincode'))[0]
 
-            mes={
+        mes={
                 'Doctor_detail'   :Doctor_det
                 }
-            return JsonResponse(mes,status=200,safe=False)
+        return JsonResponse(mes,status=200,safe=False)
+
+
+def Doctor_det(request):
+    if request.method == 'POST':
+       data = json.loads(request.body)
+       Token_d       = data['Token']
+
+       if (R_Security.objects.filter(Token = Token_d).exists()): 
+         if(D_Detail.objects.exists()):
+           doctor_det = D_Detail.objects.all()
+           Doctor_data = list(doctor_det.values('id','First_Name','Last_Name','Username','Speciality','Mobile_Number','Email'))
+           mes = {      
+           'Doctor_detail'    :Doctor_data
+           }
+           return JsonResponse(mes,status=200,safe=False)
+         else:
+            mes = {      
+           'message'    :"No Doctor Registered!"
+           }
+            return JsonResponse(mes,status=403,safe=False)
+
+
+def Doctor_fees(request):
+     data = json.loads(request.body)
+     id_l   = data['id']
+     App=D_Detail.objects.get(id=id_l)
+     Fees=App.Appointment_fees
+     mes = { 
+           'Doctor_fees' :Fees
+           }
+     return JsonResponse(mes,status=200,safe=False) 
+
+
+def Specialization_view(request):
+    if request.method == 'POST':
+        Speci= D_Specialization.objects.all()
+        Spec= []
+        for i in Speci:
+             Spec.append({'Spec':i.Specialization})
+
+        mes = {
+                  'Spe' :Spec
+              }
+        return JsonResponse(mes,status=200,safe=False)            
+
+
+
+
 
 def Patient_detail(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        id_d = data['id']
+    
+        Patient_d = P_Detail.objects.filter(id = id_d)
+     
+        Patient_det = list(Patient_d.values('id','First_Name','Last_Name','Username','DOB','Email','Mobile_Number','Gender','Blood_Group','Address','City','State','Country','Pincode'))[0]
+
+        mes={
+                'Patient_detail'   :Patient_det
+                }
+        return JsonResponse(mes,status=200,safe=False)       
+
+
+
+def Patient_doc_detail(request):
     if request.method == 'POST':
         data = json.loads(request.body)
         id_d = data['id']
@@ -257,14 +325,48 @@ def Patient_detail(request):
              Patient_det= []
              for i in Patient_l:               
 
-                Patient_det.append({"id":i.Patient.id,"F_Name":i.Patient.First_Name,"L_Name":i.Patient.Last_Name,"Usern":i.Patient.Username,"dob":i.Patient.DOB,"email":i.Patient.Email,"M_No":i.Patient.Mobile_Number,"Gend":i.Patient.Gender,"gov_id":i.Patient.Government_ID,"gov_id_n":i.Patient.Gov_ID_Number,"height":i.Patient.Height,"weight":i.Patient.Weight,"blood_group":i.Patient.Blood_Group,"address":i.Patient.Address,"city":i.Patient.City,"state":i.Patient.State,"country":i.Patient.Country,"pincode":i.Patient.Pincode})
+                Patient_det.append({"id":i.Patient.id,"F_Name":i.Patient.First_Name,"L_Name":i.Patient.Last_Name,"Usern":i.Patient.Username,"dob":i.Patient.DOB,"email":i.Patient.Email,"M_No":i.Patient.Mobile_Number,"Gend":i.Patient.Gender,"blood_group":i.Patient.Blood_Group})
 
              mes = {
                     'Patient_detail' :Patient_det
                    }
              return JsonResponse(mes,status=200,safe=False)
 
-def App_Patient_View(request):
+
+def Patient_det(request):
+    if request.method == 'POST':
+       data = json.loads(request.body)
+       Token_d       = data['Token']
+
+       if (R_Security.objects.filter(Token = Token_d).exists()): 
+         if(P_Detail.objects.exists()):
+           Patient_det = P_Detail.objects.all()
+           Patient_data = list(Patient_det.values('id','First_Name','Last_Name'))
+           mes = {      
+           'Patient_detail'    :Patient_data
+           }
+           return JsonResponse(mes,status=200,safe=False)
+         else:
+            mes = {      
+           'message'    :"No Patient Registered!"
+           }
+            return JsonResponse(mes,status=403,safe=False) 
+
+
+def Patient_gen(request):
+    if request.method == 'POST':
+       data = json.loads(request.body)
+       id_l   = data['id']
+       Patient_det = P_Detail.objects.get(id=id_l)
+       Gen = Patient_det.Gender
+       mes = {      
+           'Patient_gender'    :Gen
+           }
+       return JsonResponse(mes,status=200,safe=False)
+
+
+
+def Appo_Patient_View(request):
     if request.method == 'POST':
         data = json.loads(request.body)
         Token_d = data['Token']
@@ -275,65 +377,102 @@ def App_Patient_View(request):
             mes={
                 'Patient_detail'   :Patient_det
                 }
-            return JsonResponse(mes,status=200,safe=False)                       
+            return JsonResponse(mes,status=200,safe=False)
+
+
+def Patient_Previous_Appointment(request):
+     data = json.loads(request.body)
+     id_d = data['id']      
+     if(P_Appointment.objects.filter(Patient=id_d).exists()):
+         Patient_a =P_Appointment.objects.filter(Patient=id_d)
+         Patient_det = list(Patient_a.values('id','Patient_Age','Patient_Disease','Appointment_date','Appointment_time','Appointment_Status','Appointed_Doctor','Prescription','Diagnosis','Payment_Status','Payment_Time','Appointment_reg_at'))
+
+         mes={
+                'Patient_Appointment'   :Patient_det
+                }
+         return JsonResponse(mes,status=200,safe=False)
+
+
+def Patient_delete(request):
+    
+    if request.method == "POST":
+        data = json.loads(request.body)
+        id_p          = data['id']
+
+        if(P_Detail.objects.filter(id = id_p).exists()):  
+            obj = get_object_or_404(P_Detail, id=id_p)
+            obj.delete()                   
+            mes = { 
+               'message' :'Patient Deleted Successfully!',
+                }
+            return JsonResponse(mes,status=200,safe=False)         
 
 
 
 
-def Appointment_View(request):
+
+def Appointment_Noti(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        Token_d = data['Token']
+        if (R_Security.objects.filter(Token = Token_d).exists()):
+
+              Patient_d       = P_Appointment.objects.filter(Appointment_Status="Pending",Payment_Status="Waiting For Approval")
+              if(Patient_d):
+
+                 Patient_det= []
+                 for i in Patient_d:               
+                   
+                   Patient_det.append({"ID":i.id,"F_Name":i.Patient.First_Name,"L_Name":i.Patient.Last_Name,"App_date":i.Appointment_date,"App_time":i.Appointment_time,"Pat_disease":i.Patient_Disease,"App_Doc":i.Appointed_Doctor,"App_Stat":i.Appointment_Status})
+
+                 mes = {
+                          'Appointment_detail' :Patient_det
+                       }
+                 return JsonResponse(mes,status=200,safe=False)    
+              else:
+                 mes = {
+                          'message' :"No Approval Pending!"
+                       }
+                 return JsonResponse(mes,status=403,safe=False)
+
+
+
+def Appointment_Request(request):
     if request.method == 'POST':
         
-        data = json.loads(request.body)
-        User_p = data['Username']
-        App_p  = data['Appointment_St']
-        User_list = P_Detail.objects.filter(Username = User_p)[0]
-        id_d =User_list.id
-        if(P_Appointment.objects.filter(Patient = id_d).exists()):
+         data = json.loads(request.body)
+         id_d   = data['id']
+         App_p  = data['Appointment_St']
+         App = P_Appointment.objects.filter(id = id_d)[0]
+         App_s = App.Appointment_Status
+         if(App_s=="Pending"):
 
-
-           if(App_p=="Approve"):
+            if(App_p=="Accept"):
                obj = P_Appointment.objects.get(Patient=id_d)
                obj.Appointment_Status="Waiting For Doctor's Approval"
-               obj.save(update_fields=['Appointment_Status'])
+               obj.Payment_Status="Successful"
+               obj.save(update_fields=['Appointment_Status','Payment_Status'])
                mes = { 
-                       'message' :'Appointment Approved From Receptionist!'
+                       'message' :'Appointment Approved!'
                          }
                return JsonResponse(mes,status=200,safe=False)
-           else:
+            if(App_p=="Reject"):
+               App_rej = data['Reason']
+               if (not App_rej):
+                   mes = {
+                         'message': 'Rejection Reason Required!!'
+                        }
+                   return JsonResponse(mes,status=403,safe=False)
                obj = P_Appointment.objects.get(Patient=id_d)
                obj.Appointment_Status="Rejected"
-               obj.save(update_fields=['Appointment_Status'])
+               obj.Payment_Status="Payment Returned"
+               obj.App_Rej_Reason=App_rej
+               obj.save(update_fields=['Appointment_Status','App_Rej_Reason','Payment_Status'])
                mes = { 
-                      'message' :'Appointment Rejected from Receptionist!'
+                      'message' :'Appointment Rejected!'
                         }
                return JsonResponse(mes,status=200,safe=False)
 
-
-def Payment_View(request):
-    if request.method == 'POST':
-        
-        data = json.loads(request.body)
-        User_p = data['Username']
-        Pay_p  = data['Payment_St']
-        User_list = P_Detail.objects.filter(Username = User_p)[0]
-        id_d =User_list.id
-        if(P_Appointment.objects.filter(Patient = id_d).exists()):
-            if(Pay_p=="Waiting For Approval"):
-               obj = P_Appointment.objects.get(Patient=id_d)
-               obj.Payment_Status="Successful"
-               obj.save(update_fields=['Payment_Status'])
-               mes = { 
-                       'message' :'Payment Received Successfully!'
-                         }
-               return JsonResponse(mes,status=200,safe=False)
-            else:
-               obj = P_Appointment.objects.get(Patient=id_d)
-               obj.Payment_Status="Pending"
-               obj.save(update_fields=['Payment_Status'])
-               mes = { 
-                       'message' :'Payment Not Received!'
-                         }
-               return JsonResponse(mes,status=200,safe=False)
 
 
 def Add_Appointment(request):
@@ -343,8 +482,8 @@ def Add_Appointment(request):
         Patient_Disease_l  = data['Patient_Disease']
         Appointment_date_l = data['Appointment_date']
         Appointment_time_l = data['Appointment_time']
-        id_d               = data['id']
-        id_p               = data['ID']
+        id_d               = data['Id_d']
+        id_p               = data['Id_p']
         Token_d            = data['Token']
 
         if (R_Security.objects.filter(Token = Token_d).exists()):
@@ -371,13 +510,13 @@ def Add_Appointment(request):
                    return JsonResponse(mes,status=403,safe=False)     
     
             
-    
              Patient_l=P_Detail.objects.filter(id = id_p)[0]
              App=D_Detail.objects.get(id=id_d)
              First=App.First_Name
              Last=App.Last_Name
              Appointed_Doctor_l="Dr."+First+" "+Last
-             new_appointment = P_Appointment(Patient=Patient_l,Patient_Age=Patient_Age_l, Patient_Disease=Patient_Disease_l, Appointment_date=Appointment_date_l,Appointment_time=Appointment_time_l,Appointed_Doctor=Appointed_Doctor_l,Appointment_Status="Waiting For Doctor's Approval",Payment_Status="Successful")
+             x = datetime.datetime.now()
+             new_appointment = P_Appointment(Patient=Patient_l,Patient_Age=Patient_Age_l, Patient_Disease=Patient_Disease_l, Appointment_date=Appointment_date_l,Appointment_time=Appointment_time_l,Appointed_Doctor=Appointed_Doctor_l,Appointment_Status="Waiting For Doctor's Approval",Payment_Status="Successful",Payment_Time=x)
              new_appointment.save() 
              mes = { 
                   'message'   :'Appointment Fixed!!'
@@ -385,46 +524,58 @@ def Add_Appointment(request):
              return JsonResponse(mes,status=200,safe=False)
 
 
-def App_Doctor_det(request):
+
+
+
+def Disease_Search(request):
     if request.method == 'POST':
-        if(D_Detail.objects.exists()):
-           doctor_det = D_Detail.objects.all()
-           Doctor_data = list(doctor_det.values('id','First_Name','Last_Name','Speciality'))
-           mes = {      
-           'Doctor_detail'    :Doctor_data
-           }
-           return JsonResponse(mes,status=200,safe=False)
-        else:
-            mes = {      
-           'Doctor_detail'    :"No Doctor Registered!"
-           }
-            return JsonResponse(mes,status=200,safe=False)
-
-def Doctor_fees(request):
-     data = json.loads(request.body)
-     id_l   = data['id']
-     App=D_Detail.objects.get(id=id_l)
-     Fees=App.Appointment_fees
-     mes = { 
-           'Doctor_fees' :Fees
-           }
-     return JsonResponse(mes,status=200,safe=False) 
-
-def Patient_delete(request):
-    
-    if request.method == "POST":
         data = json.loads(request.body)
-        id_p          = data['id']
-        Token_d       = data['Token']
-
+        Token_d = data['Token']
+        Dis     = data['Disease']
         if (R_Security.objects.filter(Token = Token_d).exists()):
-            if(P_Detail.objects.filter(id = id_p).exists()):  
-               obj = get_object_or_404(P_Detail, id=id_p)
-               obj.delete()                   
-               mes = { 
-               'message' :'Patient Deleted Successfully!',
-                }
-               return JsonResponse(mes,status=200,safe=False)
+
+              Patient_d       = P_Appointment.objects.filter(Patient_Disease=Dis)
+              if(Patient_d):
+
+                 Patient_det= []
+                 for i in Patient_d:               
+                   
+                   Patient_det.append({"ID":i.id,"F_Name":i.Patient.First_Name,"L_Name":i.Patient.Last_Name,"App_date":i.Appointment_date,"App_time":i.Appointment_time,"Pat_disease":i.Patient_Disease,"App_Doc":i.Appointed_Doctor,"App_Stat":i.Appointment_Status})
+
+                 mes = {
+                          'Patient_detail' :Patient_det
+                       }
+                 return JsonResponse(mes,status=200,safe=False)    
+              else:
+                 mes = {
+                          'message' :"No Patient Found!"
+                       }
+                 return JsonResponse(mes,status=403,safe=False) 
+
+
+def Disease_view(request):
+    if request.method == 'POST':
+        Dise = P_Disease.objects.all()
+        Disease= []
+        for i in Dise:
+             Disease.append({'Disea':i.Disease})
+
+        mes = {
+                  'Des' :Disease
+              }
+        return JsonResponse(mes,status=200,safe=False) 
+
+
+
+
+  
+
+
+
+
+
+
+                          
 
 
 

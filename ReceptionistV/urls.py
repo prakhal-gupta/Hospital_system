@@ -1,5 +1,5 @@
 from django.urls import path
-from ReceptionistV.views import registration_view,login_view,Appointment_View,Payment_View,Receptionist_dash,Receptionist_Logout,Patient_delete,Doctor_detail,Patient_detail,App_Patient_View,Add_Appointment,App_Doctor_det,Doctor_fees
+from ReceptionistV.views import *
 
 
 app_name = 'ReceptionistV'
@@ -8,14 +8,28 @@ urlpatterns = [
     path('login', login_view),
     path('home',Receptionist_dash),
     path('logout',Receptionist_Logout),
+
+    path('Doctor/View',Doctor_det),
     path('Doctor/Detail',Doctor_detail),
-    path('Patient/Detail',Patient_detail),
-    path('Patient/View',App_Patient_View),
-    path('Add/Appointment',Add_Appointment),
-    path('Doctor/View',App_Doctor_det),
     path('Doctor/Fees',Doctor_fees),
-    path('Appointment',Appointment_View),
-    path('Patient/Payment',Payment_View),
+    path('Doctor/Speciality',Specialization_view),
+
+    path('Patient/View',Appo_Patient_View),
+    path('Patient/Detail',Patient_detail),
+    path('Patient/Doc/Detail',Patient_doc_detail),
+    path('App/Patient',Patient_det),
+    path('Patient/Gender',Patient_gen),
+    path('Patient/Pre/Appointment',Patient_Previous_Appointment),
     path('Patient/Delete',Patient_delete),
+    
+    path('Notification',Appointment_Noti),
+    path('Appointment',Appointment_Request),
+    path('Add/Appointment',Add_Appointment),
+    
+    path('Disease/Patient',Disease_Search),
+    path('Disease/View',Disease_view),
+    
+    
+    
  ] 
  

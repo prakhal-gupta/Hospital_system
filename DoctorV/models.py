@@ -3,6 +3,7 @@ from django.db import models
 class D_Detail(models.Model):
         First_Name             = models.CharField(max_length=50, null=True)
         Last_Name              = models.CharField(max_length=50, null=True)
+        Display_Name           = models.CharField(max_length=50, null=True)
         Username               = models.CharField(max_length=50, null=True)
         DOB                    = models.DateField(max_length=50,null=True)
         Email                  = models.EmailField(null=True)
@@ -31,4 +32,7 @@ class D_Security(models.Model):
      Doctor                = models.ForeignKey(D_Detail,on_delete=models.CASCADE)
      Username              = models.CharField(max_length=50,null=True)
      Token                 = models.CharField(max_length=30, null=True) 
-     Generated_at          = models.DateTimeField(auto_now_add=True, null=True)        
+     Generated_at          = models.DateTimeField(auto_now_add=True, null=True)
+
+class D_Specialization(models.Model):
+            Specialization = models.CharField(max_length=50,null=True)        
