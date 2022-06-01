@@ -1,4 +1,4 @@
-from django.shortcuts import render,get_object_or_404
+from django.shortcuts import get_object_or_404
 import json
 import string
 import random
@@ -9,6 +9,7 @@ from .models import R_Detail,R_Security
 from PatientV.models import P_Appointment,P_Detail,P_Disease
 from DoctorV.models import D_Detail,D_Specialization
 import re
+
 
 
 def registration_view(request):
@@ -35,6 +36,17 @@ def registration_view(request):
          Pincode_r            = data['Pincode']
          
          email_condition = "^[a-zA-Z0-9\-\_\.]+@[a-zA-Z0-9]{2,}\.[a-zA-Z0-9]{2,}$"
+         Passport_condition = "[A-Z]{1}[0-9]{7}$"
+         DL_condition = "(([A-Z]{2}[0-9]{2})( )|([A-Z]{2}-[0-9]{2}))((19|20)[0-9][0-9])[0-9]{7}$"
+         Voter_ID_condition = "[A-Z]{3}[0-9]{7}$"
+         Aadhar_condition = "^[2-9]{1}[0-9]{3}[0-9]{4}[0-9]{4}$"
+         Pan_condition   = "[A-Z]{5}[0-9]{4}[A-Z]{1}$"
+         match = re.search(email_condition,Email_r)
+         match1 = re.search(Aadhar_condition,Gov_ID_Number_r)
+         match2 = re.search(Voter_ID_condition,Gov_ID_Number_r)
+         match3 = re.search(Passport_condition,Gov_ID_Number_r)
+         match4 = re.search(DL_condition,Gov_ID_Number_r)
+         match5 = re.search(Pan_condition,Gov_ID_Number_r)
          
          if (not First_Name_r):
              mes = {
@@ -69,47 +81,69 @@ def registration_view(request):
              }
              return JsonResponse(mes,status=403,safe=False)    
          
-         match = re.search(email_condition,Email_r)
-         
          if (not match):
              mes = {  
              'message': 'Invalid Email!!'
              }
-             return JsonResponse(mes,status=403,safe=False)   
-
-         if (not Password_r):
-             mes = {
-             'message': 'Password Required!!'
-             }
              return JsonResponse(mes,status=403,safe=False)
-         if (not C_Password_r):
-             mes = {   
-             'message': 'Confirm Password Required!!'
+         if (R_Detail.objects.filter(Email = Email_r)):
+             mes = {    
+             'message': 'Email Already Exists!!'
              }
-             return JsonResponse(mes,status=403,safe=False)
+             return JsonResponse(mes,status=403,safe=False)    
          if (not Mobile_Number_r):
              mes = { 
              'message': 'Mobile Number Required!!'
-             }
-             return JsonResponse(mes,status=403,safe=False)
-         if (not Gender_r):
-             mes = {     
-             'message': 'Gender Required!!'
              }
              return JsonResponse(mes,status=403,safe=False)
          if (not Government_ID_r):
              mes = {    
              'message': 'Government ID Required!!'
              }
-             return JsonResponse(mes,status=403,safe=False)
+             return JsonResponse(mes,status=403,safe=False)    
          if (not Gov_ID_Number_r):
              mes = { 
              'message': 'Government ID Number Required!!'
              }
              return JsonResponse(mes,status=403,safe=False)
+         if (Government_ID_r=="AADHAR" and not match1):
+             mes = {      
+             'message': 'Invalid AADHAR  Number!!'
+             }
+             return JsonResponse(mes,status=403,safe=False)
+         elif (Government_ID_r=="VOTER ID" and not match2):
+             mes = {      
+             'message': 'Invalid VOTER ID Number!!'
+             }
+             return JsonResponse(mes,status=403,safe=False)
+         elif (Government_ID_r=="PASSPORT" and not match3):
+             mes = {      
+             'message': 'Invalid PASSPORT Number!!'
+             }
+             return JsonResponse(mes,status=403,safe=False)
+         elif (Government_ID_r=="DRIVING LICENCE" and not match4):
+             mes = {      
+             'message': 'Invalid DRIVING LICENCE Number!!'
+             }
+             return JsonResponse(mes,status=403,safe=False)        
+         elif (Government_ID_r=="PAN" and not match5):
+             mes = {      
+             'message': 'Invalid PAN CARD Number!!'
+             }
+             return JsonResponse(mes,status=403,safe=False)    
+         if (R_Detail.objects.filter(Gov_ID_Number = Gov_ID_Number_r)):
+             mes = {    
+             'message': 'Government Id Already Exists!!'
+             }
+             return JsonResponse(mes,status=403,safe=False)    
          if (not Address_r):
              mes = {   
              'message': 'Address Required!!'
+             }
+             return JsonResponse(mes,status=403,safe=False)        
+         if (not Gender_r):
+             mes = {     
+             'message': 'Gender Required!!'
              }
              return JsonResponse(mes,status=403,safe=False)
          if (not City_r):
@@ -131,7 +165,17 @@ def registration_view(request):
              mes = {    
              'message': 'Pincode Required!!'
              }
-             return JsonResponse(mes,status=403,safe=False)                       
+             return JsonResponse(mes,status=403,safe=False)
+         if (not Password_r):
+             mes = {
+             'message': 'Password Required!!'
+             }
+             return JsonResponse(mes,status=403,safe=False)
+         if (not C_Password_r):
+             mes = {   
+             'message': 'Confirm Password Required!!'
+             }
+             return JsonResponse(mes,status=403,safe=False)                           
 
          if (Password_r != C_Password_r):
              mes = {
@@ -144,7 +188,7 @@ def registration_view(request):
           new_user = R_Detail(First_Name=First_Name_r, Last_Name=Last_Name_r, Username=Username_r, DOB=DOB_r, Email=Email_r, Password=Password_h,Mobile_Number=Mobile_Number_r, Gender=Gender_r, Government_ID=Government_ID_r, Gov_ID_Number=Gov_ID_Number_r, Height=Height_r, Weight=Weight_r, Blood_Group=Blood_Group_r, Address=Address_r, City=City_r, State=State_r, Country=Country_r, Pincode=Pincode_r)
           new_user.save()
           mes = {   
-          'message': 'User Created Successfully'
+          'message': 'Receptionist Registered Successfully'
            }
           return JsonResponse(mes,status=200,safe=False)
 
@@ -168,7 +212,7 @@ def login_view(request):
                  s+=b
                 x=R_Detail.objects.get(Username=User_l)
                 
-                
+                  
                 if Password_cr:
                     Secu = R_Security(Receptionist=x,Username=User_l,Token=s)
                     Secu.save()
@@ -288,7 +332,29 @@ def Specialization_view(request):
         mes = {
                   'Spe' :Spec
               }
-        return JsonResponse(mes,status=200,safe=False)            
+        return JsonResponse(mes,status=200,safe=False)  
+
+
+def Doctor_det_sp(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        Specialization_d = data['Specialization']
+        Doctor_data = []
+        if(D_Detail.objects.filter(Speciality=Specialization_d).exists()):
+           doctor_det = D_Detail.objects.filter(Speciality=Specialization_d)
+
+           for i  in doctor_det:
+             Doctor_data.append({"Id":i.id,"F_Name":i.First_Name,"L_Name":i.Last_Name})
+           mes = {      
+            'Doctor_detail'    :Doctor_data
+            }
+           return JsonResponse(mes,status=200,safe=False)
+        else:
+            mes = {  
+           'Doctor_detail'    :Doctor_data,         
+           'message'    :"No Doctor Available!"
+           }
+            return JsonResponse(mes,status=200,safe=False)                  
 
 
 
@@ -357,10 +423,10 @@ def Patient_gen(request):
     if request.method == 'POST':
        data = json.loads(request.body)
        id_l   = data['id']
-       Patient_det = P_Detail.objects.get(id=id_l)
-       Gen = Patient_det.Gender
+       Patient_det = P_Detail.objects.filter(id=id_l)
+       Patient_d = list(Patient_det.values('id','Gender','Patient_Age'))
        mes = {      
-           'Patient_gender'    :Gen
+           'Patient_gender'    :Patient_d
            }
        return JsonResponse(mes,status=200,safe=False)
 
@@ -385,7 +451,7 @@ def Patient_Previous_Appointment(request):
      id_d = data['id']      
      if(P_Appointment.objects.filter(Patient=id_d).exists()):
          Patient_a =P_Appointment.objects.filter(Patient=id_d)
-         Patient_det = list(Patient_a.values('id','Patient_Age','Patient_Disease','Appointment_date','Appointment_time','Appointment_Status','Appointed_Doctor','Prescription','Diagnosis','Payment_Status','Payment_Time','Appointment_reg_at'))
+         Patient_det = list(Patient_a.values('id','Patient_Disease','Appointment_date','Appointment_time','Appointment_Status','Appointed_Doctor','Prescription','Diagnosis','Payment_Status','Payment_Time','Appointment_reg_at'))
 
          mes={
                 'Patient_Appointment'   :Patient_det
@@ -418,9 +484,9 @@ def Appointment_Noti(request):
         if (R_Security.objects.filter(Token = Token_d).exists()):
 
               Patient_d       = P_Appointment.objects.filter(Appointment_Status="Pending",Payment_Status="Waiting For Approval")
+              Patient_det= []
               if(Patient_d):
 
-                 Patient_det= []
                  for i in Patient_d:               
                    
                    Patient_det.append({"ID":i.id,"F_Name":i.Patient.First_Name,"L_Name":i.Patient.Last_Name,"App_date":i.Appointment_date,"App_time":i.Appointment_time,"Pat_disease":i.Patient_Disease,"App_Doc":i.Appointed_Doctor,"App_Stat":i.Appointment_Status})
@@ -430,10 +496,11 @@ def Appointment_Noti(request):
                        }
                  return JsonResponse(mes,status=200,safe=False)    
               else:
-                 mes = {
+                 mes = {  
+                          'Appointment_detail' :Patient_det,
                           'message' :"No Approval Pending!"
                        }
-                 return JsonResponse(mes,status=403,safe=False)
+                 return JsonResponse(mes,status=200,safe=False)
 
 
 
@@ -448,7 +515,7 @@ def Appointment_Request(request):
          if(App_s=="Pending"):
 
             if(App_p=="Accept"):
-               obj = P_Appointment.objects.get(Patient=id_d)
+               obj = P_Appointment.objects.get(id=id_d)
                obj.Appointment_Status="Waiting For Doctor's Approval"
                obj.Payment_Status="Successful"
                obj.save(update_fields=['Appointment_Status','Payment_Status'])
@@ -463,9 +530,9 @@ def Appointment_Request(request):
                          'message': 'Rejection Reason Required!!'
                         }
                    return JsonResponse(mes,status=403,safe=False)
-               obj = P_Appointment.objects.get(Patient=id_d)
+               obj = P_Appointment.objects.get(id=id_d)
                obj.Appointment_Status="Rejected"
-               obj.Payment_Status="Payment Returned"
+               obj.Payment_Status="Payment Refunded"
                obj.App_Rej_Reason=App_rej
                obj.save(update_fields=['Appointment_Status','App_Rej_Reason','Payment_Status'])
                mes = { 
@@ -478,7 +545,6 @@ def Appointment_Request(request):
 def Add_Appointment(request):
     if request.method == 'POST':
         data = json.loads(request.body)
-        Patient_Age_l      = data['Patient_Age']
         Patient_Disease_l  = data['Patient_Disease']
         Appointment_date_l = data['Appointment_date']
         Appointment_time_l = data['Appointment_time']
@@ -488,11 +554,6 @@ def Add_Appointment(request):
 
         if (R_Security.objects.filter(Token = Token_d).exists()):
             
-             if (not Patient_Age_l):
-                  mes = {
-                    'message': 'Patient Age Required!!'
-                   }
-                  return JsonResponse(mes,status=403,safe=False)
              if (not Patient_Disease_l):
                   mes = {
                     'message': 'Patient Disease Required!!'
@@ -516,7 +577,7 @@ def Add_Appointment(request):
              Last=App.Last_Name
              Appointed_Doctor_l="Dr."+First+" "+Last
              x = datetime.datetime.now()
-             new_appointment = P_Appointment(Patient=Patient_l,Patient_Age=Patient_Age_l, Patient_Disease=Patient_Disease_l, Appointment_date=Appointment_date_l,Appointment_time=Appointment_time_l,Appointed_Doctor=Appointed_Doctor_l,Appointment_Status="Waiting For Doctor's Approval",Payment_Status="Successful",Payment_Time=x)
+             new_appointment = P_Appointment(Patient=Patient_l, Patient_Disease=Patient_Disease_l, Appointment_date=Appointment_date_l,Appointment_time=Appointment_time_l,Appointed_Doctor=Appointed_Doctor_l,Appointment_Status="Waiting For Doctor's Approval",Payment_Status="Successful",Payment_Time=x)
              new_appointment.save() 
              mes = { 
                   'message'   :'Appointment Fixed!!'
@@ -532,26 +593,32 @@ def Disease_Search(request):
         data = json.loads(request.body)
         Token_d = data['Token']
         Dis     = data['Disease']
+        if (not Dis):
+                   mes = { 
+                    'message': 'Patient Disease Required!!'
+                  }
+                   return JsonResponse(mes,status=403,safe=False)
         if (R_Security.objects.filter(Token = Token_d).exists()):
 
               Patient_d       = P_Appointment.objects.filter(Patient_Disease=Dis)
+              Patient_det= []
               if(Patient_d):
 
                  Patient_det= []
                  for i in Patient_d:               
                    
-                   Patient_det.append({"ID":i.id,"F_Name":i.Patient.First_Name,"L_Name":i.Patient.Last_Name,"App_date":i.Appointment_date,"App_time":i.Appointment_time,"Pat_disease":i.Patient_Disease,"App_Doc":i.Appointed_Doctor,"App_Stat":i.Appointment_Status})
+                   Patient_det.append({"ID":i.id,"F_Name":i.Patient.First_Name,"L_Name":i.Patient.Last_Name,"Gend":i.Patient.Gender,"Pat_Age":i.Patient.Patient_Age,"App_date":i.Appointment_date,"App_time":i.Appointment_time,"Pat_disease":i.Patient_Disease,"App_Doc":i.Appointed_Doctor,"App_Stat":i.Appointment_Status})
 
                  mes = {
                           'Patient_detail' :Patient_det
                        }
                  return JsonResponse(mes,status=200,safe=False)    
               else:
-                 mes = {
+                 mes = { 
+                          'Patient_detail' :Patient_det,
                           'message' :"No Patient Found!"
                        }
-                 return JsonResponse(mes,status=403,safe=False) 
-
+                 return JsonResponse(mes,status=200,safe=False)
 
 def Disease_view(request):
     if request.method == 'POST':
@@ -563,7 +630,46 @@ def Disease_view(request):
         mes = {
                   'Des' :Disease
               }
-        return JsonResponse(mes,status=200,safe=False) 
+        return JsonResponse(mes,status=200,safe=False)                 
+
+
+
+
+
+def Appointment_Date_Search(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        Token_d = data['Token']
+        Appointment_da     = data['Appointment_d']
+        if (not Appointment_da):
+                   mes = { 
+                    'message': 'Appointment date Required!!'
+                  }
+                   return JsonResponse(mes,status=403,safe=False)
+        if (R_Security.objects.filter(Token = Token_d).exists()):
+
+              Patient_d       = P_Appointment.objects.filter(Appointment_date=Appointment_da)
+              Patient_det= []
+              if(Patient_d):
+
+                 
+                 for i in Patient_d:               
+                   
+                   Patient_det.append({"ID":i.id,"F_Name":i.Patient.First_Name,"L_Name":i.Patient.Last_Name,"Gend":i.Patient.Gender,"Pat_Age":i.Patient.Patient_Age,"App_date":i.Appointment_date,"App_time":i.Appointment_time,"Pat_disease":i.Patient_Disease,"App_Doc":i.Appointed_Doctor,"App_Stat":i.Appointment_Status})
+
+                 mes = {
+                          'Patient_detail' :Patient_det
+                       }
+                 return JsonResponse(mes,status=200,safe=False)    
+              else:
+                 mes = {  
+                          'Patient_detail' :Patient_det, 
+                          'message' :"No Appointment on this date!"
+                       }
+                 return JsonResponse(mes,status=200,safe=False)                  
+
+
+ 
 
 
 

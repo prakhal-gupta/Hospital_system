@@ -5,7 +5,7 @@ class D_Detail(models.Model):
         Last_Name              = models.CharField(max_length=50, null=True)
         Display_Name           = models.CharField(max_length=50, null=True)
         Username               = models.CharField(max_length=50, null=True)
-        DOB                    = models.DateField(max_length=50,null=True)
+        DOB                    = models.DateField(null=True)
         Email                  = models.EmailField(null=True)
         Password               = models.CharField(max_length=120, null=True)
         Mobile_Number          = models.CharField(max_length=10, null=True)
@@ -25,7 +25,6 @@ class D_Detail(models.Model):
         State                  = models.CharField(max_length=50, null=True)
         Country                = models.CharField(max_length=50, null=True)   
         Pincode                = models.CharField(max_length=20, null=True)
-        # Profile_pic            = models.ImageField(upload_to='Doctor/Profile_pic/',null=True,blank=True)
         Registered_at          = models.DateTimeField(auto_now_add=True, null=True)
 
 class D_Security(models.Model):

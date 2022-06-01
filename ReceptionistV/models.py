@@ -4,7 +4,7 @@ class R_Detail(models.Model):
         First_Name       = models.CharField(max_length=50, null=True)
         Last_Name        = models.CharField(max_length=50, null=True)
         Username         = models.CharField(max_length=50, null=True)
-        DOB              = models.CharField(max_length=20,null=True)
+        DOB              = models.DateField(null=True)
         Email            = models.EmailField(null=True)
         Password         = models.CharField(max_length=120, null=True)
         Mobile_Number    = models.CharField(max_length=10, null=True)

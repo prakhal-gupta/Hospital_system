@@ -13,6 +13,7 @@ urlpatterns = [
     path('Doctor/Detail',Doctor_detail),
     path('Doctor/Fees',Doctor_fees),
     path('Doctor/Speciality',Specialization_view),
+    path('Doctors',Doctor_det_sp),
 
     path('Patient/View',Appo_Patient_View),
     path('Patient/Detail',Patient_detail),
@@ -28,6 +29,8 @@ urlpatterns = [
     
     path('Disease/Patient',Disease_Search),
     path('Disease/View',Disease_view),
+
+    path('Patient/App/Date',Appointment_Date_Search),
     
     
     
