@@ -21,7 +21,7 @@ urlpatterns = [
     path('App/Patient',Patient_det),
     path('Patient/Gender',Patient_gen),
     path('Patient/Pre/Appointment',Patient_Previous_Appointment),
-    path('Patient/Delete',Patient_delete),
+    # path('Patient/Delete',Patient_delete),
     
     path('Notification',Appointment_Noti),
     path('Appointment',Appointment_Request),

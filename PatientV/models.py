@@ -1,4 +1,5 @@
 from django.db import models
+from django.forms import IntegerField
 
 class P_Detail(models.Model):
         First_Name          = models.CharField(max_length=50, null=True)
@@ -21,6 +22,7 @@ class P_Detail(models.Model):
         State               = models.CharField(max_length=50, null=True)
         Country             = models.CharField(max_length=50, null=True)   
         Pincode             = models.CharField(max_length=20, null=True)
+        Patient_Status      = models.CharField(max_length=30, default="Patient Exists")
         Registered_at       = models.DateTimeField(auto_now_add=True, null=True)
         modified_at         = models.DateTimeField(null=True)
 
@@ -48,7 +50,8 @@ class P_Appointment(models.Model):
 class P_Security(models.Model):
      Patient               = models.ForeignKey(P_Detail,on_delete=models.CASCADE)
      Username              = models.CharField(max_length=50,null=True)
-     Token                 = models.CharField(max_length=30, null=True) 
+     Token                 = models.CharField(max_length=30, null=True)
+     OTP                   = models.IntegerField(null=True) 
      Generated_at          = models.DateTimeField(auto_now_add=True, null=True) 
 
 

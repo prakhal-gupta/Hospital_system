@@ -25,7 +25,9 @@ urlpatterns = [
     path('Previous/Patient/Prescription',Prescription_view),
 
     path('Specialization/reg',Specialization_reg),
-    path('Specialization',Specialization_view),    
+    path('Specialization',Specialization_view),
+
+    path('Pass/Change',Password_Change),    
 
 ] 
  

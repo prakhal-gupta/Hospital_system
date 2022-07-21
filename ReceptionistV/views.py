@@ -14,183 +14,191 @@ import re
 
 def registration_view(request):
     if request.method == 'POST':
-         data = json.loads(request.body)
-         First_Name_r         = data['First_Name']
-         Last_Name_r          = data['Last_Name']
-         Username_r           = data['Username']
-         DOB_r                = data['DOB']
-         Email_r              = data['Email']
-         Password_r           = data['Password']
-         C_Password_r         = data['C_Password']
-         Mobile_Number_r      = data['Mobile_Number']
-         Gender_r             = data['Gender']
-         Government_ID_r      = data['Government_ID']
-         Gov_ID_Number_r      = data['Gov_ID_Number']
-         Height_r             = data['Height']
-         Weight_r             = data['Weight']
-         Blood_Group_r        = data['Blood_Group']
-         Address_r            = data['Address']
-         City_r               = data['City']
-         State_r              = data['State']
-         Country_r            = data['Country']
-         Pincode_r            = data['Pincode']
-         
-         email_condition = "^[a-zA-Z0-9\-\_\.]+@[a-zA-Z0-9]{2,}\.[a-zA-Z0-9]{2,}$"
-         Passport_condition = "[A-Z]{1}[0-9]{7}$"
-         DL_condition = "(([A-Z]{2}[0-9]{2})( )|([A-Z]{2}-[0-9]{2}))((19|20)[0-9][0-9])[0-9]{7}$"
-         Voter_ID_condition = "[A-Z]{3}[0-9]{7}$"
-         Aadhar_condition = "^[2-9]{1}[0-9]{3}[0-9]{4}[0-9]{4}$"
-         Pan_condition   = "[A-Z]{5}[0-9]{4}[A-Z]{1}$"
-         match = re.search(email_condition,Email_r)
-         match1 = re.search(Aadhar_condition,Gov_ID_Number_r)
-         match2 = re.search(Voter_ID_condition,Gov_ID_Number_r)
-         match3 = re.search(Passport_condition,Gov_ID_Number_r)
-         match4 = re.search(DL_condition,Gov_ID_Number_r)
-         match5 = re.search(Pan_condition,Gov_ID_Number_r)
-         
-         if (not First_Name_r):
-             mes = {
-             'message': 'First Name Required!!'
-             }
-             return JsonResponse(mes,status=403,safe=False)
-         if (not Last_Name_r):
-             mes = {
-              'message': 'Last Name Required!!'
-             }
-             return JsonResponse(mes,status=403,safe=False) 
-         if (not Username_r):
-             mes = { 
-              'message': 'Username Required!!'
-             }
-             return JsonResponse(mes,status=403,safe=False)
-
-         if (R_Detail.objects.filter(Username = Username_r)):
-             mes = {   
-             'message': 'Username Already Exists!!'
-             }
-             return JsonResponse(mes,safe=False)
+            data = json.loads(request.body)
         
-         if (not DOB_r):
-             mes = {  
-              'message': 'DOB Required!!'
-             }
-             return JsonResponse(mes,status=403,safe=False)        
-         if (not Email_r):
-             mes = {  
-             'message': 'Email Required!!'
-             }
-             return JsonResponse(mes,status=403,safe=False)    
-         
-         if (not match):
-             mes = {  
-             'message': 'Invalid Email!!'
-             }
-             return JsonResponse(mes,status=403,safe=False)
-         if (R_Detail.objects.filter(Email = Email_r)):
-             mes = {    
-             'message': 'Email Already Exists!!'
-             }
-             return JsonResponse(mes,status=403,safe=False)    
-         if (not Mobile_Number_r):
-             mes = { 
-             'message': 'Mobile Number Required!!'
-             }
-             return JsonResponse(mes,status=403,safe=False)
-         if (not Government_ID_r):
-             mes = {    
-             'message': 'Government ID Required!!'
-             }
-             return JsonResponse(mes,status=403,safe=False)    
-         if (not Gov_ID_Number_r):
-             mes = { 
-             'message': 'Government ID Number Required!!'
-             }
-             return JsonResponse(mes,status=403,safe=False)
-         if (Government_ID_r=="AADHAR" and not match1):
-             mes = {      
-             'message': 'Invalid AADHAR  Number!!'
-             }
-             return JsonResponse(mes,status=403,safe=False)
-         elif (Government_ID_r=="VOTER ID" and not match2):
-             mes = {      
-             'message': 'Invalid VOTER ID Number!!'
-             }
-             return JsonResponse(mes,status=403,safe=False)
-         elif (Government_ID_r=="PASSPORT" and not match3):
-             mes = {      
-             'message': 'Invalid PASSPORT Number!!'
-             }
-             return JsonResponse(mes,status=403,safe=False)
-         elif (Government_ID_r=="DRIVING LICENCE" and not match4):
-             mes = {      
-             'message': 'Invalid DRIVING LICENCE Number!!'
-             }
-             return JsonResponse(mes,status=403,safe=False)        
-         elif (Government_ID_r=="PAN" and not match5):
-             mes = {      
-             'message': 'Invalid PAN CARD Number!!'
-             }
-             return JsonResponse(mes,status=403,safe=False)    
-         if (R_Detail.objects.filter(Gov_ID_Number = Gov_ID_Number_r)):
-             mes = {    
-             'message': 'Government Id Already Exists!!'
-             }
-             return JsonResponse(mes,status=403,safe=False)    
-         if (not Address_r):
-             mes = {   
-             'message': 'Address Required!!'
-             }
-             return JsonResponse(mes,status=403,safe=False)        
-         if (not Gender_r):
-             mes = {     
-             'message': 'Gender Required!!'
-             }
-             return JsonResponse(mes,status=403,safe=False)
-         if (not City_r):
-             mes = {  
-             'message': 'City Required!!'
-             }
-             return JsonResponse(mes,status=403,safe=False)
-         if (not State_r):
-             mes = {     
-             'message': 'State Required!!'
-             }
-             return JsonResponse(mes,status=403,safe=False)    
-         if (not Country_r):
-             mes = {     
-             'message': 'Country Required!!'
-             }
-             return JsonResponse(mes,status=403,safe=False)
-         if (not Pincode_r):
-             mes = {    
-             'message': 'Pincode Required!!'
-             }
-             return JsonResponse(mes,status=403,safe=False)
-         if (not Password_r):
-             mes = {
-             'message': 'Password Required!!'
-             }
-             return JsonResponse(mes,status=403,safe=False)
-         if (not C_Password_r):
-             mes = {   
-             'message': 'Confirm Password Required!!'
-             }
-             return JsonResponse(mes,status=403,safe=False)                           
+            First_Name_r         = data['First_Name']
+            Last_Name_r          = data['Last_Name']
+            Username_r           = data['Username']
+            DOB_r                = data['DOB']
+            Email_r              = data['Email']
+            Password_r           = data['Password']
+            C_Password_r         = data['C_Password']
+            Mobile_Number_r      = data['Mobile_Number']
+            Gender_r             = data['Gender']
+            Government_ID_r      = data['Government_ID']
+            Gov_ID_Number_r      = data['Gov_ID_Number']
+            Height_r             = data['Height']
+            Weight_r             = data['Weight']
+            Blood_Group_r        = data['Blood_Group']
+            Address_r            = data['Address']
+            City_r               = data['City']
+            State_r              = data['State']
+            Country_r            = data['Country']
+            Pincode_r            = data['Pincode']
+            
+            email_condition = "^[a-zA-Z0-9\-\_\.]+@[a-zA-Z0-9]{2,}\.[a-zA-Z0-9]{2,}$"
+            Passport_condition = "[A-Z]{1}[0-9]{7}$"
+            DL_condition = "(([A-Z]{2}[0-9]{2})( )|([A-Z]{2}-[0-9]{2}))((19|20)[0-9][0-9])[0-9]{7}$"
+            Voter_ID_condition = "[A-Z]{3}[0-9]{7}$"
+            Aadhar_condition = "^[2-9]{1}[0-9]{3}[0-9]{4}[0-9]{4}$"
+            Pan_condition   = "[A-Z]{5}[0-9]{4}[A-Z]{1}$"
+            match = re.search(email_condition,data['Email'])
+            match1 = re.search(Aadhar_condition,data['Gov_ID_Number'])
+            match2 = re.search(Voter_ID_condition,data['Gov_ID_Number'])
+            match3 = re.search(Passport_condition,data['Gov_ID_Number'])
+            match4 = re.search(DL_condition,data['Gov_ID_Number'])
+            match5 = re.search(Pan_condition,data['Gov_ID_Number'])
+            
+        #  if (not First_Name_r):
+        #      mes = {
+        #      'message': 'First Name Required!!'
+        #      }
+        #      return JsonResponse(mes,status=403,safe=False)
+        #  if (not Last_Name_r):
+        #      mes = {
+        #       'message': 'Last Name Required!!'
+        #      }
+        #      return JsonResponse(mes,status=403,safe=False) 
+        #  if (not Username_r):
+        #      mes = { 
+        #       'message': 'Username Required!!'
+        #      }
+        #      return JsonResponse(mes,status=403,safe=False)
 
-         if (Password_r != C_Password_r):
-             mes = {
-             'message': 'Password do not Match!!'
-             }
-             return JsonResponse(mes,status=403,safe=False) 
-             
-         else:
-          Password_h = make_password(Password_r)
-          new_user = R_Detail(First_Name=First_Name_r, Last_Name=Last_Name_r, Username=Username_r, DOB=DOB_r, Email=Email_r, Password=Password_h,Mobile_Number=Mobile_Number_r, Gender=Gender_r, Government_ID=Government_ID_r, Gov_ID_Number=Gov_ID_Number_r, Height=Height_r, Weight=Weight_r, Blood_Group=Blood_Group_r, Address=Address_r, City=City_r, State=State_r, Country=Country_r, Pincode=Pincode_r)
-          new_user.save()
-          mes = {   
-          'message': 'Receptionist Registered Successfully'
-           }
-          return JsonResponse(mes,status=200,safe=False)
+            if (R_Detail.objects.filter(Username = data['Username'])):
+                mes = {   
+                'message': 'Username Already Exists!!'
+                }
+                return JsonResponse(mes,safe=False)
+        
+        #  if (not DOB_r):
+        #      mes = {  
+        #       'message': 'DOB Required!!'
+        #      }
+        #      return JsonResponse(mes,status=403,safe=False)        
+        #  if (not Email_r):
+        #      mes = {  
+        #      'message': 'Email Required!!'
+        #      }
+        #      return JsonResponse(mes,status=403,safe=False)    
+            
+            if (not match):
+                mes = {  
+                'message': 'Invalid Email!!'
+                }
+                return JsonResponse(mes,status=403,safe=False)
+            if (R_Detail.objects.filter(Email = data['Email'])):
+                mes = {    
+                'message': 'Email Already Exists!!'
+                }
+                return JsonResponse(mes,status=403,safe=False)    
+        #  if (not Mobile_Number_r):
+        #      mes = { 
+        #      'message': 'Mobile Number Required!!'
+        #      }
+        #      return JsonResponse(mes,status=403,safe=False)
+        #  if (not Government_ID_r):
+        #      mes = {    
+        #      'message': 'Government ID Required!!'
+        #      }
+        #      return JsonResponse(mes,status=403,safe=False)    
+        #  if (not Gov_ID_Number_r):
+        #      mes = { 
+        #      'message': 'Government ID Number Required!!'
+        #      }
+        #      return JsonResponse(mes,status=403,safe=False)
+            if (data['Government_ID']=="AADHAR" and not match1):
+                mes = {      
+                'message': 'Invalid AADHAR  Number!!'
+                }
+                return JsonResponse(mes,status=403,safe=False)
+            elif (data['Government_ID']=="VOTER ID" and not match2):
+                mes = {      
+                'message': 'Invalid VOTER ID Number!!'
+                }
+                return JsonResponse(mes,status=403,safe=False)
+            elif (data['Government_ID']=="PASSPORT" and not match3):
+                mes = {      
+                'message': 'Invalid PASSPORT Number!!'
+                }
+                return JsonResponse(mes,status=403,safe=False)
+            elif (data['Government_ID']=="DRIVING LICENCE" and not match4):
+                mes = {      
+                'message': 'Invalid DRIVING LICENCE Number!!'
+                }
+                return JsonResponse(mes,status=403,safe=False)        
+            elif (data['Government_ID']=="PAN" and not match5):
+                mes = {      
+                'message': 'Invalid PAN CARD Number!!'
+                }
+                return JsonResponse(mes,status=403,safe=False)    
+            if (R_Detail.objects.filter(Gov_ID_Number = data['Gov_ID_Number'])):
+                mes = {    
+                'message': 'Government Id Already Exists!!'
+                }
+                return JsonResponse(mes,status=403,safe=False)    
+        #  if (not Address_r):
+        #      mes = {   
+        #      'message': 'Address Required!!'
+        #      }
+        #      return JsonResponse(mes,status=403,safe=False)        
+        #  if (not Gender_r):
+        #      mes = {     
+        #      'message': 'Gender Required!!'
+        #      }
+        #      return JsonResponse(mes,status=403,safe=False)
+        #  if (not City_r):
+        #      mes = {  
+        #      'message': 'City Required!!'
+        #      }
+        #      return JsonResponse(mes,status=403,safe=False)
+        #  if (not State_r):
+        #      mes = {     
+        #      'message': 'State Required!!'
+        #      }
+        #      return JsonResponse(mes,status=403,safe=False)    
+        #  if (not Country_r):
+        #      mes = {     
+        #      'message': 'Country Required!!'
+        #      }
+        #      return JsonResponse(mes,status=403,safe=False)
+        #  if (not Pincode_r):
+        #      mes = {    
+        #      'message': 'Pincode Required!!'
+        #      }
+        #      return JsonResponse(mes,status=403,safe=False)
+        #  if (not Password_r):
+        #      mes = {
+        #      'message': 'Password Required!!'
+        #      }
+        #      return JsonResponse(mes,status=403,safe=False)
+        #  if (not C_Password_r):
+        #      mes = {   
+        #      'message': 'Confirm Password Required!!'
+        #      }
+        #      return JsonResponse(mes,status=403,safe=False)                           
+
+            if (data['Password'] != data['C_Password']):
+                mes = {
+                'message': 'Password do not Match!!'
+                }
+                return JsonResponse(mes,status=403,safe=False) 
+                
+            else:
+                pass
+            data['Password'] = make_password(data['Password'])
+        
+        #   new_user = R_Detail(First_Name=First_Name_r, Last_Name=Last_Name_r, Username=Username_r, DOB=DOB_r, Email=Email_r, Password=Password_h,Mobile_Number=Mobile_Number_r, Gender=Gender_r, Government_ID=Government_ID_r, Gov_ID_Number=Gov_ID_Number_r, Height=Height_r, Weight=Weight_r, Blood_Group=Blood_Group_r, Address=Address_r, City=City_r, State=State_r, Country=Country_r, Pincode=Pincode_r)
+            del[data['C_Password']]
+            new_user = R_Detail(**data)
+        #   new_user = R_Detail(**kwargs)
+        #   print(kwargs)
+            new_user.save()
+        
+            mes = {   
+            'message': 'Receptionist Registered Successfully'
+            }
+            return JsonResponse(mes,status=200,safe=False)
 
 
 
@@ -437,7 +445,7 @@ def Appo_Patient_View(request):
         data = json.loads(request.body)
         Token_d = data['Token']
         
-        if (R_Security.objects.filter(Token = Token_d).exists()):
+        if (R_Security.objects.filter(Token = Token_d).exists()):   
             Patient_det = list(P_Detail.objects.values('id','First_Name','Last_Name','Username','DOB','Email','Mobile_Number','Gender'))
 
             mes={
@@ -458,20 +466,29 @@ def Patient_Previous_Appointment(request):
                 }
          return JsonResponse(mes,status=200,safe=False)
 
-
-def Patient_delete(request):
-    
-    if request.method == "POST":
-        data = json.loads(request.body)
-        id_p          = data['id']
-
-        if(P_Detail.objects.filter(id = id_p).exists()):  
-            obj = get_object_or_404(P_Detail, id=id_p)
-            obj.delete()                   
-            mes = { 
-               'message' :'Patient Deleted Successfully!',
+     else:
+         Patient_d =[]
+         mes={   
+                'Patient_Appointment'   :Patient_d,
+                'message'   :"No Previous Appointment"
                 }
-            return JsonResponse(mes,status=200,safe=False)         
+         return JsonResponse(mes,status=200,safe=False)    
+
+
+# def Patient_delete(request):
+    
+#     if request.method == "POST":
+#         data = json.loads(request.body)
+#         id_p          = data['id']
+
+#         if(P_Detail.objects.filter(id = id_p).exists()):  
+#             obj = P_Detail.objects.get(id=id_p)
+#             obj.Patient_Status="Patient Deleted"
+#             obj.save(update_fields=['Patient_Status'])             
+#             mes = { 
+#                'message' :'Patient Deleted!!',
+#                 }
+#             return JsonResponse(mes,status=200,safe=False)         
 
 
 
@@ -511,10 +528,19 @@ def Appointment_Request(request):
          id_d   = data['id']
          App_p  = data['Appointment_St']
          App = P_Appointment.objects.filter(id = id_d)[0]
-         App_s = App.Appointment_Status
+         App_s  = App.Appointment_Status
+         App_d  = App.Appointment_date
+         App_t  = App.Appointment_time
+         App_do = App.Appointed_Doctor
          if(App_s=="Pending"):
-
-            if(App_p=="Accept"):
+            
+           if(App_p=="Accept"):
+            if(P_Appointment.objects.filter(Appointment_date=App_d,Appointment_time=App_t,Appointed_Doctor=App_do)):
+                mes = {
+                    'message': 'Appointment With Same credentials Already Exists!!'
+                 }
+                return JsonResponse(mes,status=403,safe=False)  
+            else:   
                obj = P_Appointment.objects.get(id=id_d)
                obj.Appointment_Status="Waiting For Doctor's Approval"
                obj.Payment_Status="Successful"
@@ -523,7 +549,7 @@ def Appointment_Request(request):
                        'message' :'Appointment Approved!'
                          }
                return JsonResponse(mes,status=200,safe=False)
-            if(App_p=="Reject"):
+           if(App_p=="Reject"):
                App_rej = data['Reason']
                if (not App_rej):
                    mes = {

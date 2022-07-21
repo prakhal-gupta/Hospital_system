@@ -23,9 +23,9 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = '%fqjec4wj-r(_6x$b1(pbylv-cs-zz@x653=%*#s)p8$@q-@^7'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['hmsmodule.herokuapp.com/','127.0.0.1']
 
 
 # Application definition
@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'PatientV',
     'DoctorV',
     'ReceptionistV',
+    'django_filters',
 ]
 
 MIDDLEWARE = [
@@ -57,6 +58,8 @@ MIDDLEWARE = [
 ROOT_URLCONF = 'Hospital.urls'
 CORS_ORIGIN_ALLOW_ALL = True
 CORS_ALLOW_CREDENTIALS = True
+
+# AUTH_USER_MODEL = "User_app.User"
 
 TEMPLATES = [
     {
@@ -141,3 +144,4 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'Media')
 STATICFILES_DIRS= (
     os.path.join(BASE_DIR, 'static'),
 )
+

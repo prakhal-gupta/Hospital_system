@@ -8,7 +8,7 @@ from django.contrib.auth.hashers import make_password, check_password
 from .models import P_Detail,P_Appointment,P_Security,P_Disease
 from DoctorV.models import D_Detail,D_Specialization
 import re
-
+# from .sms import sms_view
 
 def registration_view(request):
     if request.method == 'POST':
@@ -33,9 +33,8 @@ def registration_view(request):
          Country_r            = data['Country']
          Pincode_r            = data['Pincode']
          Medical_his          = data['Medical_history']
-         print(Height_r)
          
-         email_condition = "[a-zA-Z0-9\-\_\.]+@[a-zA-Z0-9]{2,}\.[a-zA-Z0-9]{2,}$"
+         email_condition = "[a-zA-Z0-9\-\_\.]+@[a-zA-Z0-9]{2,}\.[a-zA-Z0-9]{2,3}$"
          Passport_condition = "[A-Z]{1}[0-9]{7}$"
          DL_condition = "(([A-Z]{2}[0-9]{2})( )|([A-Z]{2}-[0-9]{2}))((19|20)[0-9][0-9])[0-9]{7}$"
          Voter_ID_condition = "[A-Z]{3}[0-9]{7}$"
@@ -631,6 +630,120 @@ def Disease_view(request):
                   'Des' :Disease
               }
         return JsonResponse(mes,status=200,safe=False)
+
+
+
+
+# def send_sms(request):
+#     if request.method == 'POST':
+#         data = json.loads(request.body)
+#         User_l = data['Username']
+#         if (P_Detail.objects.filter(Username = User_l).exists()):   
+#             sms_view(User_l)
+#             # a=list((string.digits))
+#             # s=""
+#             # for i in range(6):
+#             #     b=random.choice(a)
+#             #     s+=b
+#             # x=P_Detail.objects.get(Username=User_l)
+#             # Secu = P_Security(Patient=x,Username=User_l,OTP=s)
+#             # Secu.save()
+#             mes = {
+#                   'message' :"Sms Sent Successfully!",
+#               }
+#             return JsonResponse(mes,status=200,safe=False)
+#         else:
+#             mes = {
+#                   'message' :"Username Doesnot exists!"
+#               }
+#             return JsonResponse(mes,status=403,safe=False)      
+
+
+def Password_Change(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        Token_l = data['Token']
+        
+        if (P_Security.objects.filter(Token = Token_l).exists()):
+            Patient_s = P_Security.objects.filter(Token = Token_l)[0]
+            User_l = Patient_s.Username
+            Previous_Pass = data['Previous_Password']
+            if (not Previous_Pass):
+                        mes = { 
+                                'message': 'Previous Password Required!!'
+                                 }
+                        return JsonResponse(mes,status=403,safe=False)
+            if (P_Detail.objects.filter(Username = User_l).exists()):
+                User_list    = P_Detail.objects.filter(Username = User_l)[0]
+                Password_c   = User_list.Password
+                Password_cr  = check_password(Previous_Pass , Password_c)
+                if (Password_cr):
+                    Password_r    = data['Password']
+                    C_Password_r  = data['C_Password']
+                    if (not Password_r):
+                        mes = { 
+                    'message': 'New Password Required!!'
+                     }
+                        return JsonResponse(mes,status=403,safe=False)
+                    if (not C_Password_r):
+                        mes = { 
+                                 'message': 'Confirm Password Required!!'
+                              }
+                        return JsonResponse(mes,status=403,safe=False)
+
+                    if(Previous_Pass == Password_r):
+                        mes = { 
+                                'message' :'Please Enter different Password!!'
+                              }
+                        return JsonResponse(mes,status=403,safe=False)    
+                        
+                    if(Password_r != C_Password_r):
+                        mes = { 
+                                'message' :'Password donot Match!!'
+                              }
+                        return JsonResponse(mes,status=403,safe=False)
+                        
+
+                    else:    
+                        Password_h = make_password(Password_r)
+                        obj = P_Detail.objects.get(Username = User_l)
+                        x = datetime.datetime.now()
+                        obj.Password=Password_h
+                        obj.modified_at=x
+                        obj.save(update_fields=['Password','modified_at'])
+                        mes = { 
+                            'message' :'Password Changed Successfully!'
+                        }
+                        return JsonResponse(mes,status=200,safe=False)
+
+                else:
+                      mes = { 
+                         'message' :'Previous Password doesnot Match!!'
+                   }
+                return JsonResponse(mes,status=403,safe=False)  
+
+
+# def OTP_Verification(request):
+#     if request.method == 'POST':
+#         data = json.loads(request.body)
+#         otp_l = data['OTP']
+#         if (P_Security.objects.filter(OTP = otp_l).exists()):
+#             mes = { 
+#                 'message' :'Password donot Match!!'
+#                }
+#             return JsonResponse(mes,status=403,safe=False)
+
+#         else:
+#             mes = { 
+#                 'message' :'Incorrect OTP!!'
+#                }
+#             return JsonResponse(mes,status=403,safe=False)        
+                
+
+
+
+        
+                   
 
 
         

@@ -691,7 +691,71 @@ def Specialization_view(request):
         mes = {
                   'Spe' :Spec
               }
-        return JsonResponse(mes,status=200,safe=False)                        
+        return JsonResponse(mes,status=200,safe=False)         
+
+
+def Password_Change(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        Token_l = data['Token']
+        
+        if (D_Security.objects.filter(Token = Token_l).exists()):
+            Patient_s = D_Security.objects.filter(Token = Token_l)[0]
+            User_l = Patient_s.Username
+            Previous_Pass = data['Previous_Password']
+            if (not Previous_Pass):
+                        mes = { 
+                                'message': 'Previous Password Required!!'
+                                 }
+                        return JsonResponse(mes,status=403,safe=False)
+            if (D_Detail.objects.filter(Username = User_l).exists()):
+                User_list    = D_Detail.objects.filter(Username = User_l)[0]
+                Password_c   = User_list.Password
+                Password_cr  = check_password(Previous_Pass , Password_c)
+                if (Password_cr):
+                    Password_r    = data['Password']
+                    C_Password_r  = data['C_Password']
+                    if (not Password_r):
+                        mes = { 
+                    'message': 'New Password Required!!'
+                     }
+                        return JsonResponse(mes,status=403,safe=False)
+                    if (not C_Password_r):
+                        mes = { 
+                                 'message': 'Confirm Password Required!!'
+                              }
+                        return JsonResponse(mes,status=403,safe=False)
+
+                    if(Previous_Pass == Password_r):
+                        mes = { 
+                                'message' :'Please Enter different Password!!'
+                              }
+                        return JsonResponse(mes,status=403,safe=False)    
+                        
+                    if(Password_r != C_Password_r):
+                        mes = { 
+                                'message' :'Password donot Match!!'
+                              }
+                        return JsonResponse(mes,status=403,safe=False)
+                        
+
+                    else:    
+                        Password_h = make_password(Password_r)
+                        obj = D_Detail.objects.get(Username = User_l)
+                        # x = datetime.datetime.now()
+                        obj.Password=Password_h
+                        # obj.modified_at=x
+                        obj.save(update_fields=['Password'])
+                        mes = { 
+                            'message' :'Password Changed Successfully!'
+                        }
+                        return JsonResponse(mes,status=200,safe=False)
+
+                else:
+                      mes = { 
+                         'message' :'Previous Password doesnot Match!!'
+                   }
+                return JsonResponse(mes,status=403,safe=False)                         
 
 
 

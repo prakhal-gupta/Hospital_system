@@ -27,5 +27,9 @@ urlpatterns = [
 
     path('Doc/Specialization',Specialization_view),
 
+   #  path('SMS',send_sms),
+    path('Pass/Change',Password_Change),
+   #  path('OTP/Verification',OTP_Verification),
+
  ] 
  
