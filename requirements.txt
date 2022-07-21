@@ -12,7 +12,6 @@ django-storages==1.12.3
 djangorestframework==3.13.1
 gunicorn==20.1.0
 jmespath==1.0.1
-josepy==1.10.0
 mysqlclient==2.1.1
 Pillow==9.0.1
 PyJWT==2.4.0
