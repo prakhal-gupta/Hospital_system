@@ -12,6 +12,8 @@ https://docs.djangoproject.com/en/2.0/ref/settings/
 
 import os
 from re import S
+import psycopg2
+
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -85,6 +87,10 @@ WSGI_APPLICATION = 'Hospital.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/2.0/ref/settings/#databases
 
+conn = psycopg2.connect("dbname=hmsmodule user=Prakhal")
+cur = conn.cursor()
+cur.execute("SELECT * FROM my_data")
+records = cur.fetchall() 
 
 DATABASES = {
     'default': {
